@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"
+        integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+    <style>
+        .image-container {
+            height: 200px;
+            display: none;
+            background-color: aqua;
+            overflow-y: scroll;
+        }
+
+        .image {
+            height: 100%;
+            width: 20%;
+        }
+
+        .one-image {
+            display: inline-block;
+            width: fit-content;
+            background-color: blue;
+            height: 100%;
+            position: relative;
+            margin: 0 5px;
+        }
+
+        img {
+            height: 100%;
+        }
+
+        .cancel {
+            position: absolute;
+            top: 5%;
+            right: 5%;
+            cursor: pointer;
+        }
+
+        .multiple{
+            display: inline-block;
+            margin: auto;
+            height: 100%;
+            width: 10%;
+            cursor: pointer;
+            margin: 0 10px;
+        }
+    </style>
+</head>
+
+<body>
+        <form method="get" enctype="multipart/form-data">
+            <button class="add" type="button">Add</button>
+            <button type="submit">Submit</button>
+        </form>
+        <input type="file" class="imageUpload" style="display: none;" multiple>
+        <div class="image-container">
+            <div class="multiple">
+                <div style="height: 100%; background-color: antiquewhite;display: flex; justify-content: center; align-items: center; margin: auto;">
+                    +
+                </div>
+            </div>
+        </div>
+    <script>
+        $(document).ready(function () {
+
+            function updateFiles()
+            {
+                let input = document.querySelector('.add');
+                let selectedFiles = [];
+
+                $('.one-image').each(function(){
+                    let file = new File([$(this).find('input[type="hidden"]').val()], '');
+                    selectedFiles.push(file)
+                })
+                console.log("selected files");
+                console.log(selectedFiles);
+            }
+
+            $('.add').on('click', function () {
+                $('.imageUpload').click();
+            });
+
+            $('.imageUpload').on('change', function () {
+                $('.image-container').show();
+
+                let multipleButtom = document.querySelector('.multiple');
+                let selectedFiles = Object.values($(this).prop('files'));
+
+                selectedFiles.forEach((file) => {
+                    const fileUrl = URL.createObjectURL(file);
+                    let child = document.createElement('div');
+                    child.classList.add('one-image');
+                    child.innerHTML = `
+                            <input type="hidden" value="${file}">
+                            <img src="${fileUrl}" alt="">
+                            <button class="cancel">X</button>
+                    `;
+
+                    let imageContainer = document.querySelector('.image-container').insertBefore(child, multipleButtom);
+                })
+            });
+
+            $('.image-container').on('click', '.cancel', function () {
+                $(this).parent().remove();
+                let childrens = $('.image-container').children().filter('.one-image');
+                if(childrens.length == 0)
+                $('.image-container').hide();
+                updateFiles();
+            });
+            $('.image-container').on('DOMSubtreeModified', function(){
+                // update files prop of input type 
+                updateFiles();
+            })
+
+            $('.multiple').on('click', function() {
+                $('.imageUpload').click();
+            })
+        });
+    </script>
+</body>
+
+</html>

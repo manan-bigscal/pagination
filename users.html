@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"
+        integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+    <title>Document</title>
+    <style>
+        .user {
+            height: 50vh;
+            background-color: aqua;
+            font-size: 300px;
+            text-align: center;
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="user-container"></div>
+
+    <script>
+
+        var skip = 0;
+        var limit = 2;
+
+        $(document).ready(loadUsers());
+
+        function onScroll() {
+            const scrollTop = document.documentElement.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight;
+            const clientHeight = document.documentElement.clientHeight;
+
+            if (scrollTop + clientHeight >= scrollHeight) {
+                loadUsers()
+            }
+        }
+
+        window.addEventListener('scroll', onScroll);
+
+        let container = document.querySelector('.user-container');
+
+        function loadUsers() {
+            $.ajax({
+                url: `http://localhost:8000?skip=${skip}&limit=${limit}`,
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    data.forEach(user => {
+                        let element = document.createElement('div');
+                        element.setAttribute('class', 'user');
+                        element.textContent = user.name;
+
+                        container.appendChild(element);
+                    })
+                },
+                error: function (error) {
+
+                }
+            })
+            skip += limit;
+        }
+
+    </script>
+</body>
+
+</html>
